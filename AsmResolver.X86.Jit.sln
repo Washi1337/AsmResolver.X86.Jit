@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.22823.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApplication", "TestApplication\TestApplication.csproj", "{A193EA03-827A-4CFA-80C7-F55C99974577}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsmResolver.X86.Jit", "AsmResolver.X86.Jit\AsmResolver.X86.Jit.csproj", "{52359F91-1B60-4948-9662-BB8BF67FC46A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsmResolver", "AsmResolver\AsmResolver\AsmResolver.csproj", "{228B5994-1035-4EB0-A095-8D85B6EE1146}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A193EA03-827A-4CFA-80C7-F55C99974577}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A193EA03-827A-4CFA-80C7-F55C99974577}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A193EA03-827A-4CFA-80C7-F55C99974577}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A193EA03-827A-4CFA-80C7-F55C99974577}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52359F91-1B60-4948-9662-BB8BF67FC46A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52359F91-1B60-4948-9662-BB8BF67FC46A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52359F91-1B60-4948-9662-BB8BF67FC46A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52359F91-1B60-4948-9662-BB8BF67FC46A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{228B5994-1035-4EB0-A095-8D85B6EE1146}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{228B5994-1035-4EB0-A095-8D85B6EE1146}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{228B5994-1035-4EB0-A095-8D85B6EE1146}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{228B5994-1035-4EB0-A095-8D85B6EE1146}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

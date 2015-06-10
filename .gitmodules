@@ -1,0 +1,3 @@
+[submodule "AsmResolver"]
+	path = AsmResolver
+	url = https://github.com/JerreS/AsmResolver.git
