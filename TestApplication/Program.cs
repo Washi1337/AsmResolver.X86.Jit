@@ -22,7 +22,7 @@ namespace TestApplication
                 var formatBytes = Encoding.ASCII.GetBytes(Console.ReadLine() + "\r\n");
 
                 Console.Write("Count:");
-                var count = int.Parse(Console.ReadLine());
+                int count = int.Parse(Console.ReadLine());
 
                 fixed (byte* formatPtr = formatBytes)
                 {
@@ -52,30 +52,39 @@ namespace TestApplication
             const X86Register esp = X86Register.Esp;
             const X86OperandUsage dword = X86OperandUsage.DwordPointer;
 
+            const int varCounter = -8;
+            const int paramFormat = +8;
+            const int paramCount = +12;
+
             emitter
-                .Push(ebp)
+                .Push(ebp)                                 // Function prologue.
                 .Mov(ebp, esp)
+                
+                .Push(ecx)                                 // Save ECX
+                .Sub(esp, 4)                               // Allocate space for counter var.
+                
+                .Mov(dword, ebp, varCounter, 0u)           // int counter = 0;
+                .Jmp(conditionStart)                       // goto conditionStart;
 
-                .Push(ecx)
-                .Mov(dword, ebp, -4, 0u)           // int counter = 0;
-                .Jmp(conditionStart)               // goto conditionStart;
-
-                .MarkLabel(loopStart)              // loopStart:
-                .Push(dword, ebp, -4)              // printf(format, counter);
-                .Push(dword, ebp, +8)
+                .MarkLabel(loopStart)                      // loopStart:
+                .Push(dword, ebp, varCounter)              // printf(format, counter);
+                .Push(dword, ebp, paramFormat)
                 .Call("msvcrt.dll", "printf")
                 .Add(esp, 8)
 
-                .Mov(eax, dword, ebp, -4)          // counter++;
-                .Add(eax, 1)
-                .Mov(dword, ebp, -4, eax)
+                .Mov(eax, dword, ebp, varCounter)          // counter++;
+                .Inc(eax)
+                .Mov(dword, ebp, varCounter, eax)
 
-                .MarkLabel(conditionStart)         // conditionStart:
-                .Mov(ecx, dword, ebp, -4)          // if (counter <= count) goto loopStart;
-                .Cmp(ecx, dword, ebp, +12)
+                .MarkLabel(conditionStart)                 // conditionStart:
+                .Mov(ecx, dword, ebp, varCounter)          // if (counter <= count) goto loopStart;
+                .Cmp(ecx, dword, ebp, paramCount)
                 .Jle(loopStart)
 
-                .Mov(esp, ebp)
+                .Add(esp, 4)                               // Free counter variable. 
+                .Pop(ecx)                                  // Restore ECX
+                
+                .Mov(esp, ebp)                             // Function epilogue.
                 .Pop(ebp)
                 .Retn();
 
