@@ -3,21 +3,21 @@ using System.Runtime.InteropServices;
 
 namespace AsmResolver.X86.Jit
 {
-    internal static class NativeMethods
+    public static class Kernel32
     {
         [DllImport("kernel32.dll", SetLastError = true)]
-        internal static extern IntPtr VirtualAlloc(IntPtr lpAddress, IntPtr dwSize, AllocationType flAllocationType,
+        public static extern IntPtr VirtualAlloc(IntPtr lpAddress, IntPtr dwSize, AllocationType flAllocationType,
             MemoryProtection flProtect);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        internal static extern bool VirtualFree(IntPtr lpAddress, IntPtr dwSize, FreeType dwFreeType);
+        public static extern bool VirtualFree(IntPtr lpAddress, IntPtr dwSize, FreeType dwFreeType);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        internal static extern bool VirtualProtect(IntPtr lpAddress, uint dwSize, MemoryProtection flNewProtect,
+        public static extern bool VirtualProtect(IntPtr lpAddress, uint dwSize, MemoryProtection flNewProtect,
             out MemoryProtection lpflOldProtect);
 
         [Flags]
-        internal enum AllocationType : uint
+        public enum AllocationType : uint
         {
             COMMIT = 0x1000,
             RESERVE = 0x2000,
@@ -29,7 +29,7 @@ namespace AsmResolver.X86.Jit
         }
 
         [Flags]
-        internal enum MemoryProtection : uint
+        public enum MemoryProtection : uint
         {
             EXECUTE = 0x10,
             EXECUTE_READ = 0x20,
@@ -45,7 +45,7 @@ namespace AsmResolver.X86.Jit
         }
 
         [Flags]
-        internal enum FreeType : uint
+        public enum FreeType : uint
         {
             DECOMMIT = 0x4000,
             RELEASE = 0x8000,

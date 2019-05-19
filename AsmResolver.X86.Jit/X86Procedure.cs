@@ -18,24 +18,7 @@ namespace AsmResolver.X86.Jit
             if (!typeof (TDelegate).IsSubclassOf(typeof (Delegate)))
                 throw new ArgumentException("Type must be a subclass of System.Delegate.");
 
-            var protection = NativeMethods.MemoryProtection.READWRITE;
-            var size = emitter.GetSize();
-
-            var ptr = NativeMethods.VirtualAlloc(IntPtr.Zero,
-                new IntPtr(size),
-                NativeMethods.AllocationType.COMMIT,
-                protection);
-
-            if (ptr == IntPtr.Zero)
-                throw new Win32Exception();
-
-            var writer = new UnsafeMemoryWriter(ptr, size);
-            var assembler = new X86Assembler(writer);
-            emitter.WriteTo(assembler, writer.Position);
-
-            if (!NativeMethods.VirtualProtect(ptr, (uint)size, NativeMethods.MemoryProtection.EXECUTE_READ, out protection))
-                throw new Win32Exception();
-
+            var ptr = emitter.CreateExecutableMemorySegment(out long size);
             return new X86Procedure<TDelegate>(ptr, size);
         }
 
@@ -66,7 +49,7 @@ namespace AsmResolver.X86.Jit
         
         public void Dispose()
         {
-            if (!NativeMethods.VirtualFree(Address, new IntPtr(Size), NativeMethods.FreeType.DECOMMIT))
+            if (!Kernel32.VirtualFree(Address, new IntPtr(Size), Kernel32.FreeType.DECOMMIT))
                 throw new Win32Exception();
             Address = IntPtr.Zero;
             Size = 0;

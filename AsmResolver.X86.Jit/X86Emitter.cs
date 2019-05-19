@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Dynamic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -20,6 +21,28 @@ namespace AsmResolver.X86.Jit
         private readonly List<X86Instruction> _instructions = new List<X86Instruction>();
         private readonly Queue<X86Label> _queuedLabels = new Queue<X86Label>();
 
+        public IntPtr CreateExecutableMemorySegment(out long size)
+        {
+            var protection = Kernel32.MemoryProtection.READWRITE;
+            size = GetSize();
+
+            var ptr = Kernel32.VirtualAlloc(IntPtr.Zero,
+                new IntPtr(size),
+                Kernel32.AllocationType.COMMIT,
+                protection);
+
+            if (ptr == IntPtr.Zero)
+                throw new Win32Exception();
+
+            var writer = new UnsafeMemoryWriter(ptr, size);
+            var assembler = new X86Assembler(writer);
+            WriteTo(assembler, writer.Position);
+
+            if (!Kernel32.VirtualProtect(ptr, (uint) size, Kernel32.MemoryProtection.EXECUTE_READ, out protection))
+                throw new Win32Exception();
+            return ptr;
+        }
+        
         public X86Emitter Nop()
         {
             var instruction = new X86Instruction()
@@ -130,6 +153,18 @@ namespace AsmResolver.X86.Jit
             return Append(instruction);
         }
 
+        public X86Emitter Mov(X86OperandUsage usageA, X86Register registerA, X86Register offsetReg, int offsetScalar, int offset, X86Register registerB)
+        {
+            var instruction = new X86Instruction()
+            {
+                Mnemonic = X86Mnemonic.Mov,
+                OpCode = X86OpCodes.Mov_RegOrMem1632_Reg1632,
+                Operand1 = new X86Operand(usageA, registerA, new X86ScaledIndex(offsetReg, offsetScalar), offset, X86OffsetType.Short),
+                Operand2 = new X86Operand(registerB),
+            };
+            return Append(instruction);
+        }
+
         public X86Emitter Mov(X86OperandUsage usageA, X86Register registerA, int offset, uint value)
         {
             var instruction = new X86Instruction()
@@ -162,6 +197,19 @@ namespace AsmResolver.X86.Jit
                 OpCode = X86OpCodes.Mov_Reg1632_RegOrMem1632,
                 Operand1 = new X86Operand(registerA),
                 Operand2 = new X86Operand(usageB, registerB, offset),
+            };
+            return Append(instruction);
+        }
+
+
+        public X86Emitter Mov(X86Register registerA, X86OperandUsage usageB, X86Register registerB, X86Register offsetReg, int offsetScalar, int offset)
+        {
+            var instruction = new X86Instruction()
+            {
+                Mnemonic = X86Mnemonic.Mov,
+                OpCode = X86OpCodes.Mov_Reg1632_RegOrMem1632,
+                Operand1 = new X86Operand(registerA),
+                Operand2 = new X86Operand(usageB, registerB, new X86ScaledIndex(offsetReg, offsetScalar), offset, X86OffsetType.Short),
             };
             return Append(instruction);
         }
